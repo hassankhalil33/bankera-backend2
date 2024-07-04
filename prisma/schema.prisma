@@ -12,3 +12,20 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+enum Account_Type {
+  FREE
+  PREMIUM
+}
+
+model User {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  username     String       @unique
+  password     String
+  email        String       @unique
+  accounts     String[]     @db.ObjectId
+  accountCount Int          @default(1)
+  accountType  Account_Type @default(FREE)
+  dateCreated  DateTime     @default(now())
+  dateUpdate   DateTime     @updatedAt()
+}
