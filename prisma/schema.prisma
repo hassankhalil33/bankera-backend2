@@ -19,16 +19,18 @@ enum Account_Type {
 }
 
 model User {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  username     String       @unique
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  username     String        @unique
   password     String
-  email        String       @unique
+  email        String        @unique
   accounts     String[]
-  accountCount Int          @default(1)
-  accountType  Account_Type @default(FREE)
-  dateCreated  DateTime     @default(now())
-  dateUpdated  DateTime     @updatedAt()
+  accountCount Int           @default(1)
+  accountType  Account_Type  @default(FREE)
+  dateCreated  DateTime      @default(now())
+  dateUpdated  DateTime      @updatedAt()
   account      Account[]
+  transaction  Transaction[] @relation("sender")
+  transaction2 Transaction[] @relation("receiver")
 }
 
 model Account {
@@ -40,4 +42,15 @@ model Account {
   transactions String[]
   dateCreated  DateTime @default(now())
   dateUpdated  DateTime @updatedAt()
+}
+
+model Transaction {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  sender     User     @relation("sender", fields: [senderId], references: [id])
+  senderId   String   @db.ObjectId
+  receiver   User     @relation("receiver", fields: [receiverId], references: [id])
+  receiverId String   @db.ObjectId
+  amount     Int
+  message    String
+  date       DateTime @default(now())
 }
