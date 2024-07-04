@@ -23,9 +23,21 @@ model User {
   username     String       @unique
   password     String
   email        String       @unique
-  accounts     String[]     @db.ObjectId
+  accounts     String[]
   accountCount Int          @default(1)
   accountType  Account_Type @default(FREE)
   dateCreated  DateTime     @default(now())
-  dateUpdate   DateTime     @updatedAt()
+  dateUpdated  DateTime     @updatedAt()
+  account      Account[]
+}
+
+model Account {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @db.ObjectId
+  money        Int      @default(0)
+  isBanned     Boolean  @default(false)
+  transactions String[]
+  dateCreated  DateTime @default(now())
+  dateUpdated  DateTime @updatedAt()
 }
