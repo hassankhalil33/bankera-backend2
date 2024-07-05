@@ -19,38 +19,42 @@ enum Account_Type {
 }
 
 model User {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  username     String        @unique
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  username     String       @unique
   password     String
-  email        String        @unique
-  accounts     String[]
-  accountCount Int           @default(1)
-  accountType  Account_Type  @default(FREE)
-  dateCreated  DateTime      @default(now())
-  dateUpdated  DateTime      @updatedAt()
-  account      Account[]
-  transaction  Transaction[] @relation("sender")
-  transaction2 Transaction[] @relation("receiver")
+  email        String       @unique
+  allAccounts  Account      @relation("allAccounts", fields: [accounts], references: [id])
+  accounts     String[]     @db.ObjectId
+  accountCount Int          @default(1)
+  accountType  Account_Type @default(FREE)
+  dateCreated  DateTime     @default(now())
+  dateUpdated  DateTime     @updatedAt()
+  account      Account?     @relation("userAccount")
 }
 
 model Account {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  user         User     @relation(fields: [userId], references: [id])
-  userId       String   @db.ObjectId
-  money        Int      @default(0)
-  isBanned     Boolean  @default(false)
-  transactions String[]
-  dateCreated  DateTime @default(now())
-  dateUpdated  DateTime @updatedAt()
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  user                User         @relation("userAccount", fields: [userId], references: [id], onUpdate: NoAction)
+  userId              String       @unique @db.ObjectId
+  money               Int          @default(0)
+  isBanned            Boolean      @default(false)
+  allTransactions     Transaction  @relation("allTransactions", fields: [transactions], references: [id], onUpdate: NoAction)
+  transactions        String[]     @db.ObjectId
+  dateCreated         DateTime     @default(now())
+  dateUpdated         DateTime     @updatedAt()
+  senderTransaction   Transaction? @relation("sender")
+  receiverTransaction Transaction? @relation("receiver")
+  userAccounts        User[]       @relation("allAccounts")
 }
 
 model Transaction {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  sender     User     @relation("sender", fields: [senderId], references: [id])
-  senderId   String   @db.ObjectId
-  receiver   User     @relation("receiver", fields: [receiverId], references: [id])
-  receiverId String   @db.ObjectId
-  amount     Int
-  message    String
-  date       DateTime @default(now())
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  sender       Account   @relation("sender", fields: [senderId], references: [id])
+  senderId     String    @unique @db.ObjectId
+  receiver     Account   @relation("receiver", fields: [receiverId], references: [id])
+  receiverId   String    @unique @db.ObjectId
+  amount       Int
+  message      String?
+  date         DateTime  @default(now())
+  transAccount Account[] @relation("allTransactions")
 }
