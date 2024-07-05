@@ -6,7 +6,7 @@ export class UsersService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async createUser(data) {
-    this.prisma.user.create({
+    await this.prisma.user.create({
       data
     })
 
@@ -26,7 +26,7 @@ export class UsersService {
   }
 
   async updateUser(username: string, data) {
-    this.prisma.user.update({
+    await this.prisma.user.update({
       data,
       where: {
         username
@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   async deleteUser(username: string) {
-    this.prisma.user.delete({
+    await this.prisma.user.delete({
       where: {
         username
       }

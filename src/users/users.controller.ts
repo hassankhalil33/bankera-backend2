@@ -1,29 +1,32 @@
 import { Controller, Get, Param, Post, Body, Delete, Patch } from '@nestjs/common';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
+  constructor(private readonly userService: UsersService) {}
+
   @Get()
   getAllUsers() {
-    return {};
+    return this.userService.getUsers();
   };
 
-  @Get("/:id")
-  getUser(@Param("id") id: string ) {
-    return { id };
+  @Get("/:username")
+  getUser(@Param("username") username: string ) {
+    return this.userService.getUser(username);
   };
 
   @Post()
   createUser(@Body() body: {name: string, password: string, email: string}) {
-    return body;
+    return this.userService.createUser(body);
   };
 
-  @Patch("/:id")
-  updateUser(@Param("id") id: string, @Body() body: {name: string, password: string, email: string}) {
-    return {id, ...body};
+  @Patch("/:username")
+  updateUser(@Param("username") username: string, @Body() body: {name: string, password: string, email: string}) {
+    return this.userService.updateUser(username, body);
   }
 
-  @Delete("/:id")
-  deleteUser(@Param("id") id: string) {
-    return { id };
+  @Delete("/:username")
+  deleteUser(@Param("username") username: string) {
+    return this.userService.deleteUser(username);
   };
 };
