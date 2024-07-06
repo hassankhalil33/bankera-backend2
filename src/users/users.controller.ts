@@ -16,12 +16,12 @@ export class UsersController {
   };
 
   @Post()
-  createUser(@Body() body: {name: string, password: string, email: string}) {
+  createUser(@Body() body: {username: string, password: string, email: string}) {
     return this.userService.createUser(body);
   };
 
   @Patch("/:username")
-  updateUser(@Param("username") username: string, @Body() body: {name: string, password: string, email: string}) {
+  updateUser(@Param("username") username: string, @Body() body: {username: string, password: string, email: string}) {
     return this.userService.updateUser(username, body);
   }
 

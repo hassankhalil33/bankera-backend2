@@ -5,27 +5,17 @@ import { DatabaseService } from 'src/database/database.service';
 export class UsersService {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createUser(data) {
-    const user = await this.prisma.user.create({
-      data
-    })
-
-    const account = await this.prisma.account.create({
+  async createUser(body: {username: string, password: string, email: string}) {
+    await this.prisma.user.create({
       data: {
-        userId: user.id
+        ...body,
+        accounts: {
+          create: {}
+        }
       }
     })
 
-    await this.prisma.user.update({
-      data: {
-        accounts: [account.id]
-      },
-      where: {
-        id: user.id
-      }
-    })
-
-    return {"message": "user created successfully"}
+    return { "message": "user created successfully"}
   }
 
   async getUsers() {
@@ -38,7 +28,7 @@ export class UsersService {
         username
       },
       include: {
-        allAccounts: true
+        accounts: true
       }
     })
   }
