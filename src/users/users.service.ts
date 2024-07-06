@@ -6,8 +6,23 @@ export class UsersService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async createUser(data) {
-    await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data
+    })
+
+    const account = await this.prisma.account.create({
+      data: {
+        userId: user.id
+      }
+    })
+
+    await this.prisma.user.update({
+      data: {
+        accounts: [account.id]
+      },
+      where: {
+        id: user.id
+      }
     })
 
     return {"message": "user created successfully"}
@@ -21,6 +36,9 @@ export class UsersService {
     return this.prisma.user.findUnique({
       where: {
         username
+      },
+      include: {
+        allAccounts: true
       }
     })
   }
