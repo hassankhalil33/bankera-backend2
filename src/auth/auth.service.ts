@@ -5,12 +5,12 @@ import { DatabaseService } from 'src/database/database.service';
 export class AuthService {
   constructor(private readonly prisma: DatabaseService) {}
 
-  registerUser() {
-    return {"message": "User Registered Successfully"};
+  registerUser(body) {
+    return {"message": "User Registered Successfully", body};
   };
 
-  loginUser() {
-    return {"message": "User Loggedin Successfully"};
+  loginUser(body) {
+    return {"message": "User Loggedin Successfully", body};
   };
 
   logoutUser() {
