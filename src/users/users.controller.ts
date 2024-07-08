@@ -23,7 +23,7 @@ export class UsersController {
   @Patch("/:username")
   updateUser(@Param("username") username: string, @Body() body: {username: string, password: string, email: string}) {
     return this.userService.updateUser(username, body);
-  }
+  };
 
   @Delete()
   deleteAll() {
