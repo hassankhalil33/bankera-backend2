@@ -44,6 +44,12 @@ export class UsersService {
     return {"message": "user updated successfully"}
   }
 
+  async deleteAllUsers() {
+    await this.prisma.user.deleteMany();
+
+    return {"message": "all users deleted"}
+  }
+
   async deleteUser(username: string) {
     await this.prisma.user.delete({
       where: {

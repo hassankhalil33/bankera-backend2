@@ -25,6 +25,11 @@ export class UsersController {
     return this.userService.updateUser(username, body);
   }
 
+  @Delete()
+  deleteAll() {
+    return this.userService.deleteAllUsers();
+  };
+
   @Delete("/:username")
   deleteUser(@Param("username") username: string) {
     return this.userService.deleteUser(username);
