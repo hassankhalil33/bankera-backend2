@@ -3,10 +3,14 @@ import { DatabaseService } from 'src/database/database.service';
 import { RegisterDto } from './dtos/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dtos/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { jwtSecretKey } from 'src/utilities/constants';
+import { Request, Response } from 'express';
+
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: DatabaseService) {}
+  constructor(private readonly prisma: DatabaseService, private jwtService: JwtService) {}
   private readonly salt = "ksadui73dksia8"
 
   async hashPassword(password: string) {
@@ -16,6 +20,10 @@ export class AuthService {
 
   async checkPassword(inputPassword: string, storedPassword: string) {
     return await bcrypt.compare(inputPassword + this.salt, storedPassword);
+  };
+
+  async signUser(username) {
+    return this.jwtService.signAsync({username}, {secret: jwtSecretKey});
   };
 
   async registerUser(body: RegisterDto) {
@@ -43,7 +51,7 @@ export class AuthService {
 
     const hashedPassword = await this.hashPassword(password);
 
-    const newUser = await this.prisma.user.create({
+    await this.prisma.user.create({
       data: {
         ...body,
         password: hashedPassword,
@@ -56,7 +64,7 @@ export class AuthService {
     return {"message": "User Registered Successfully"};
   };
 
-  async loginUser(body: LoginDto) {
+  async loginUser(body: LoginDto, req: Request, res: Response) {
     const {username, password} = body;
 
     const foundUser = await this.prisma.user.findUnique({
@@ -67,7 +75,9 @@ export class AuthService {
 
     if (foundUser) {
       if (await this.checkPassword(password, foundUser.password)) {
-        return {"jwt": ""};
+        const token = await this.signUser(foundUser.username);
+
+        return res.send({token});
       }
     }
 
