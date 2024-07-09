@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { RegisterDto } from './dtos/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -77,14 +77,20 @@ export class AuthService {
       if (await this.checkPassword(password, foundUser.password)) {
         const token = await this.signUser(foundUser.username);
 
-        return res.send({token});
+        res.cookie("jwt-token", token, {
+          httpOnly: true
+        })
+
+        return res.send({"message": "User Logged In Successfully"});
       }
     }
 
-    return {"message": "Incorrect Username or Password"};
+    throw new UnauthorizedException("Incorrect Username or Password");
   };
 
-  async logoutUser() {
-    return {"message": "User Loggedout Successfully"};
+  async logoutUser(req: Request, res: Response) {
+    res.clearCookie("jwt-token");
+
+    return res.send({"message": "User Logged Out Successfully"});
   };
 };
