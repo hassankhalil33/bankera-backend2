@@ -27,6 +27,7 @@ model User {
   accounts     Account[]
   accountCount Int       @default(1)
   acccountType User_Type @default(FREE)
+  refreshToken String?
   dateCreated  DateTime  @default(now())
   dateUpdated  DateTime  @updatedAt()
 }

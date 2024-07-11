@@ -4,8 +4,9 @@ import { RegisterDto } from './dtos/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { jwtSecretKey } from 'src/utilities/constants';
+import { accessSecretKey, refreshSecretKey } from 'src/utilities/constants';
 import { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 
 @Injectable()
@@ -22,8 +23,18 @@ export class AuthService {
     return await bcrypt.compare(inputPassword + this.salt, storedPassword);
   };
 
-  async signUser(username, role) {
-    return this.jwtService.signAsync({username, role}, {secret: jwtSecretKey});
+  async signAccessToken(username, role) {
+    return this.jwtService.signAsync({username, role}, {
+      secret: accessSecretKey,
+      expiresIn: "1m"
+    });
+  };
+
+  async signRefreshToken(uuid) {
+    return this.jwtService.signAsync({uuid}, {
+      secret: refreshSecretKey,
+      expiresIn: "7d"
+    });
   };
 
   async registerUser(body: RegisterDto) {
@@ -75,13 +86,25 @@ export class AuthService {
 
     if (foundUser) {
       if (await this.checkPassword(password, foundUser.password)) {
-        const token = await this.signUser(foundUser.username, foundUser.acccountType);
+        const accessToken = await this.signAccessToken(foundUser.username, foundUser.acccountType);
+        const randomUUID = uuidv4();
+        const refreshToken = await this.signRefreshToken(randomUUID);
 
-        res.cookie("jwt-token", token, {
-          httpOnly: true
+        await this.prisma.user.update({
+          where: {
+            username: foundUser.username
+          },
+          data: {
+            refreshToken: randomUUID
+          }
         })
 
-        return res.send({"message": "User Logged In Successfully"});
+        res.cookie("refresh-token", refreshToken, {
+          httpOnly: true,
+          secure: true
+        })
+
+        return res.send({accessToken});
       }
     }
 
