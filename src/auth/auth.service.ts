@@ -22,8 +22,8 @@ export class AuthService {
     return await bcrypt.compare(inputPassword + this.salt, storedPassword);
   };
 
-  async signUser(username) {
-    return this.jwtService.signAsync({username}, {secret: jwtSecretKey});
+  async signUser(username, role) {
+    return this.jwtService.signAsync({username, role}, {secret: jwtSecretKey});
   };
 
   async registerUser(body: RegisterDto) {
@@ -75,7 +75,7 @@ export class AuthService {
 
     if (foundUser) {
       if (await this.checkPassword(password, foundUser.password)) {
-        const token = await this.signUser(foundUser.username);
+        const token = await this.signUser(foundUser.username, foundUser.acccountType);
 
         res.cookie("jwt-token", token, {
           httpOnly: true
