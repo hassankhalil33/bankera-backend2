@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator"
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 
 
 export class TransactionDto {
@@ -11,6 +11,7 @@ export class TransactionDto {
   receiverAccount: string
 
   @IsNotEmpty()
+  @IsNumber()
   amount: number
 
   @IsString()

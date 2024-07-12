@@ -32,6 +32,10 @@ export class AccountsService {
       }
     })
 
+    if (!foundAccount) {
+      throw new BadRequestException("Account Doesnt Exist");
+    }
+
     const { userId, dateUpdated, ...filteredAccount } = foundAccount;
     return res.send({account: filteredAccount});
   }
@@ -73,7 +77,7 @@ export class AccountsService {
       throw new BadRequestException("Not Enough Money");
     }
 
-    const prismaTransaction = await this.prisma.$transaction([
+    await this.prisma.$transaction([
       this.prisma.transaction.create({
         data: {
           senderId: senderAccount,
@@ -102,7 +106,7 @@ export class AccountsService {
       }),
     ])
 
-    return res.send({prismaTransaction})
+    return res.send({"message": "Transaction Completed Successfully"});
   }
 
 
