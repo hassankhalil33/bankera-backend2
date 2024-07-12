@@ -5,19 +5,6 @@ import { DatabaseService } from 'src/database/database.service';
 export class UsersService {
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createUser(body: {username: string, password: string, email: string}) {
-    await this.prisma.user.create({
-      data: {
-        ...body,
-        accounts: {
-          create: {}
-        }
-      }
-    })
-
-    return { "message": "user created successfully"}
-  }
-
   async getUsers() {
     return this.prisma.user.findMany()
   }

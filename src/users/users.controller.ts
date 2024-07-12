@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Post, Body, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Param, Body, Delete, Patch, UseGuards, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -10,16 +11,15 @@ export class UsersController {
     return this.userService.getUsers();
   };
 
+  @UseGuards(AuthGuard("access"))
+  @UseGuards(AuthGuard("refresh"))
   @Get("/:username")
   getUser(@Param("username") username: string ) {
     return this.userService.getUser(username);
   };
 
-  @Post()
-  createUser(@Body() body: {username: string, password: string, email: string}) {
-    return this.userService.createUser(body);
-  };
-
+  @UseGuards(AuthGuard("access"))
+  @UseGuards(AuthGuard("refresh"))
   @Patch("/:username")
   updateUser(@Param("username") username: string, @Body() body: {username: string, password: string, email: string}) {
     return this.userService.updateUser(username, body);
@@ -30,6 +30,8 @@ export class UsersController {
     return this.userService.deleteAllUsers();
   };
 
+  @UseGuards(AuthGuard("access"))
+  @UseGuards(AuthGuard("refresh"))
   @Delete("/:username")
   deleteUser(@Param("username") username: string) {
     return this.userService.deleteUser(username);

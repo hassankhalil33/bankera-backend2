@@ -7,7 +7,7 @@ import { accessSecretKey } from "src/utilities/constants";
 export class AccessStrategy extends PassportStrategy(Strategy, "access") {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: accessSecretKey
     })
   }
