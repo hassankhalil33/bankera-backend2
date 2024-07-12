@@ -33,22 +33,19 @@ model User {
 }
 
 model Account {
-  id                  String        @id @unique @default(uuid())
-  User                User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId              String        @unique
-  money               Float         @default(0)
-  is_banned           Boolean       @default(false)
-  transactions        Transaction[]
-  SenderTransaction   Transaction?  @relation("sender")
-  ReceiverTransaction Transaction?  @relation("receiver")
-  dateCreated         DateTime      @default(now())
-  dateUpdated         DateTime      @updatedAt()
+  id                   String        @id @unique @default(uuid())
+  User                 User          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId               String        @unique
+  money                Float         @default(0)
+  is_banned            Boolean       @default(false)
+  sentTransactions     Transaction[] @relation("sender")
+  receivedTransactions Transaction[] @relation("receiver")
+  dateCreated          DateTime      @default(now())
+  dateUpdated          DateTime      @updatedAt()
 }
 
 model Transaction {
   id         String   @id @unique @default(uuid())
-  Account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  accountId  String   @unique
   Sender     Account  @relation("sender", fields: [senderId], references: [id])
   senderId   String   @unique
   Receiver   Account  @relation("receiver", fields: [receiverId], references: [id])
