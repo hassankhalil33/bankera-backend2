@@ -4,8 +4,7 @@ import { TransactionDto } from './dtos/transaction.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard("access"))
-@UseGuards(AuthGuard("refresh"))
+@UseGuards(AuthGuard("access"), AuthGuard("refresh"))
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}

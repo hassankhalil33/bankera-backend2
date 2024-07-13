@@ -27,6 +27,8 @@ export class UsersController {
     return this.userService.updateUser(username, body);
   };
 
+  @Roles("ADMIN")
+  @UseGuards(RoleGuard)
   @Delete()
   deleteAll() {
     return this.userService.deleteAllUsers();
