@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { DatabaseService } from 'src/database/database.service';
 import { UpdateUserDto } from './dtos/updateuser.dto';
 
@@ -17,7 +17,9 @@ export class UsersService {
     return res.send(filteredUsers);
   }
 
-  async getUser(res: Response, username: string) {
+  async getUser(req: Request, res: Response) {
+    const username = req.user["username"];
+
     const foundUser = await this.prisma.user.findUnique({
       where: {
         username

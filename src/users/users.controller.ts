@@ -1,25 +1,25 @@
-import { Controller, Get, Param, Body, Delete, Patch, UseGuards, Response } from '@nestjs/common';
+import { Controller, Get, Param, Body, Delete, Patch, UseGuards, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dtos/updateuser.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { RoleGuard } from 'src/auth/guards/roles.guard';
 
-@UseGuards(AuthGuard("access"), AuthGuard("refresh"))
+@UseGuards(AuthGuard("access"))
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Roles("ADMIN")
-  @UseGuards(RoleGuard)
   @Get()
-  getAllUsers(@Response() res) {
-    return this.userService.getUsers(res);
+  getUser(@Req() req, @Res() res ) {
+    return this.userService.getUser(req, res);
   };
 
-  @Get("/:username")
-  getUser(@Param("username") username: string, @Response() res ) {
-    return this.userService.getUser(res, username);
+  @Roles("ADMIN")
+  @UseGuards(RoleGuard)
+  @Get("/all")
+  getAllUsers(@Res() res) {
+    return this.userService.getUsers(res);
   };
 
   @Patch("/:username")
