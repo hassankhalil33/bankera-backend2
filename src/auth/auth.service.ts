@@ -37,7 +37,7 @@ export class AuthService {
   async signAccessToken(username, role) {
     return this.jwtService.signAsync({username, role}, {
       secret: accessSecretKey,
-      expiresIn: "1d"
+      expiresIn: "10s"
     });
   };
 
